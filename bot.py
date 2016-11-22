@@ -1,7 +1,6 @@
 import discord
-import asyncio
 
-from base_command import run_command
+from commands import run_command
 
 client = discord.Client()
 
@@ -11,7 +10,6 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print('------')
-    import commands
 
 @client.event
 async def on_message(message):
