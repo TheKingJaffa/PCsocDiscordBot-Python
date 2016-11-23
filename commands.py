@@ -1,15 +1,34 @@
-import simple_commands
 from base_command import Command
+from helpers import classproperty
 
+
+class Help(Command):
+    desc = 'This help text'
+    pprint = dict(args='[<command/subcommand>]')
+
+    @staticmethod
+    def find_command(args):
+        cls = Command
+        first_arg = 0
+        for arg in args:
+            if arg in cls.subcommands:
+                cls = cls.subcommands[arg]
+                first_arg += 1
+            else:
+                break
+        args = args[first_arg:]
+        return cls, args
+
+    def eval(self, *args):
+        cls, fn_args = Help.find_command(args)
+        if fn_args:
+            return " ".join(args) + " is not a command.\n" + Command.help
+        else:
+            return cls.help + '\n\nType !help <command> for more info on a command'
+
+# needs to occur after creating help because help should be the first item in help
+import simple_commands
 
 def run_command(message, *args):
-    cls = Command
-    first_arg = 0
-    for arg in args:
-        if arg in cls.subcommands:
-            cls = cls.subcommands[arg]
-            first_arg += 1
-        else:
-            break
-    args = args[first_arg:]
+    cls, args = Help.find_command(args)
     return cls(message, *args).output

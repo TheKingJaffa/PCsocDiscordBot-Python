@@ -23,12 +23,11 @@ class Tags(Command):
 
 
 class Add(Tags):
-    """Adds/changes a player tag with associated platform/game to the list"""
+    desc = "Adds/changes a player tag with associated platform/game to the list"
+    pprint = dict(platform="platform/game")
+
     def eval(self, platform, tag):
-        """
-        :param platform: platform/game
-        """
         return "Adding %s to %s" % (tag, platform)
 
 if __name__ == '__main__':
-    print(Command.help)
+    print(Add.help)

@@ -14,8 +14,8 @@ class Tree(type):
 
 
 class Command(metaclass=Tree):
-    desc = 'PCSoc discord bot'
-    subcommands = OrderedDict()
+    desc = '**PCSocBot** - PC Enthusiasts society Discord bot made with discord.py by Matt Stark'
+    pprint = {}
 
     @classproperty
     def name(cls):
@@ -24,9 +24,16 @@ class Command(metaclass=Tree):
     def __init__(self, message, *args):
         self.message = message
         if hasattr(self, 'eval'):
-            self.output = self.eval(*args)
+            argspec = inspect.getargspec(self.eval)
+            if len(argspec.args) == len(args) + 1 or argspec.varargs:
+                self.output = self.eval(*args)
+            else:
+                self.output = "Invalid usage of command. Usage:\n" + self.tag_markup
         else:
             self.output = self.help
+
+    def eval(self):
+        return self.help
 
     @classproperty
     def tag_prefix_list(cls):
@@ -36,14 +43,17 @@ class Command(metaclass=Tree):
 
     @classproperty
     def tag_markup(cls):
+        func_args = inspect.getargspec(cls.eval).args[1:] + [inspect.getargspec(cls.eval).varargs]
+        if func_args[-1] is None: func_args.pop()
         prefix = cls.tag_prefix_list
         return '**`!' + prefix[0] + '`** ' + \
-               ' '.join('`' + item + '`' for item in prefix[1:])
+               ' '.join('`' + item + '`' for item in prefix[1:]) + ' ' + \
+               ' '.join('__`' + cls.pprint.get(item, item) + '`__' for item in func_args)
 
     @classproperty
-    def help(cls, full=False):
+    def help(cls):
         if cls.subcommands:
-            lines = [cls.desc, '', '**Subcommands**']
+            lines = [cls.desc, '', '**Commands**' if cls.__base__ == object else '**Subcommands**']
             if cls.__base__ != object:
                 lines = [cls.tag_markup] + lines
             for command in cls.subcommands.values():
