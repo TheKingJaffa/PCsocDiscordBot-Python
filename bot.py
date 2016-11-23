@@ -1,9 +1,9 @@
 import discord
 
-from base_command import COMMAND_PREFIX
-from commands import Help
+import commands
 
 client = discord.Client()
+
 
 @client.event
 async def on_ready():
@@ -12,11 +12,12 @@ async def on_ready():
     print(client.user.id)
     print('------')
 
+
 @client.event
 async def on_message(message):
-    if message.content.startswith(COMMAND_PREFIX):
+    if message.content.startswith(commands.PREFIX):
         args = message.content[1:].split()
-        cls, args = Help.find_command(args)
+        cls, args = commands.Help.find_command(args)
         output = cls(message, *args).output
         if output is not None:
             await client.send_message(message.channel, output)

@@ -3,7 +3,7 @@ import inspect
 
 from helpers import classproperty, code, bold, underline
 
-COMMAND_PREFIX = '~'
+PREFIX = '!'
 
 
 class Tree(type):
@@ -25,6 +25,8 @@ class Command(metaclass=Tree):
 
     def __init__(self, message, *args):
         self.message = message
+        self.author = message.author
+        self.user = self.author.id
         if hasattr(self, 'eval'):
             argspec = inspect.getargspec(self.eval)
             if len(argspec.args) == len(args) + 1 or argspec.varargs:
@@ -48,7 +50,7 @@ class Command(metaclass=Tree):
         func_args = inspect.getargspec(cls.eval).args[1:] + [inspect.getargspec(cls.eval).varargs]
         if func_args[-1] is None: func_args.pop()
         prefix = cls.tag_prefix_list
-        prefix[0] = COMMAND_PREFIX + prefix[0]
+        prefix[0] = PREFIX + prefix[0]
         return ' '.join(bold(code(item)) for item in prefix) + ' ' + \
                ' '.join(underline(code(cls.pprint.get(item, item))) for item in func_args)
 

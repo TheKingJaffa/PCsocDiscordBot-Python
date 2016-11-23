@@ -1,5 +1,4 @@
-from base_command import Command
-from helpers import classproperty
+from commands.base import Command
 
 
 class Help(Command):
@@ -25,6 +24,3 @@ class Help(Command):
             return " ".join(args) + " is not a command.\n" + Command.help
         else:
             return cls.help + '\n\nType ' + Help.tag_markup + ' for more info on a command'
-
-# needs to occur after creating help because help should be the first item in help
-import simple_commands
