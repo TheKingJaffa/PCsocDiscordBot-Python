@@ -1,7 +1,9 @@
 from collections import OrderedDict
 import inspect
 
-from helpers import classproperty, code, bold, underline
+from pony.orm import db_session
+
+from helpers import classproperty, code, bold, underline, CommandFailure
 
 PREFIX = '!'
 
@@ -12,10 +14,13 @@ class Tree(type):
         if bases:
             bases[0].subcommands[cls.name] = cls
         super().__init__(name, bases, clsdict)
-        cls.subcommands = OrderedDict()
 
+        cls.subcommands = OrderedDict()
+        if cls.db_required:
+            cls.eval = db_session(cls.eval)
 
 class Command(metaclass=Tree):
+    db_required = False
     desc = bold('PCSocBot') + ' - PC Enthusiasts society Discord bot made with discord.py by Matt Stark'
     pprint = {}
 
@@ -25,12 +30,15 @@ class Command(metaclass=Tree):
 
     def __init__(self, message, *args):
         self.message = message
-        self.author = message.author
-        self.user = self.author.id
+        self.user = message.author.id
+        self.name = message.author.name
         if hasattr(self, 'eval'):
             argspec = inspect.getargspec(self.eval)
             if len(argspec.args) == len(args) + 1 or argspec.varargs:
-                self.output = self.eval(*args)
+                try:
+                    self.output = self.eval(*args)
+                except CommandFailure as e:
+                    self.output = e.args[0]
             else:
                 self.output = "Invalid usage of command. Usage:\n" + self.tag_markup
         else:

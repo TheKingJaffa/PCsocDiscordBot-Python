@@ -16,3 +16,6 @@ def underline(s):
 
 def code(s):
     return surround(s, '`')
+
+class CommandFailure(Exception):
+    pass
