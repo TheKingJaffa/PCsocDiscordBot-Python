@@ -1,6 +1,7 @@
 import discord
 
-from commands import run_command
+from base_command import COMMAND_PREFIX
+from commands import Help
 
 client = discord.Client()
 
@@ -13,8 +14,10 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    if message.content.startswith('!'):
-        output = run_command(message, *message.content[1:].split())
+    if message.content.startswith(COMMAND_PREFIX):
+        args = message.content[1:].split()
+        cls, args = Help.find_command(args)
+        output = cls(message, *args).output
         if output is not None:
             await client.send_message(message.channel, output)
 

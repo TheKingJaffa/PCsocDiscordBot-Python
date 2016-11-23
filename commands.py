@@ -24,11 +24,7 @@ class Help(Command):
         if fn_args:
             return " ".join(args) + " is not a command.\n" + Command.help
         else:
-            return cls.help + '\n\nType !help <command> for more info on a command'
+            return cls.help + '\n\nType ' + Help.tag_markup + ' for more info on a command'
 
 # needs to occur after creating help because help should be the first item in help
 import simple_commands
-
-def run_command(message, *args):
-    cls, args = Help.find_command(args)
-    return cls(message, *args).output

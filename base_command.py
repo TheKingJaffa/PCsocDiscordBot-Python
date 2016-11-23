@@ -1,7 +1,9 @@
 from collections import OrderedDict
 import inspect
 
-from helpers import classproperty
+from helpers import classproperty, code, bold, underline
+
+COMMAND_PREFIX = '~'
 
 
 class Tree(type):
@@ -14,7 +16,7 @@ class Tree(type):
 
 
 class Command(metaclass=Tree):
-    desc = '**PCSocBot** - PC Enthusiasts society Discord bot made with discord.py by Matt Stark'
+    desc = bold('PCSocBot') + ' - PC Enthusiasts society Discord bot made with discord.py by Matt Stark'
     pprint = {}
 
     @classproperty
@@ -46,14 +48,14 @@ class Command(metaclass=Tree):
         func_args = inspect.getargspec(cls.eval).args[1:] + [inspect.getargspec(cls.eval).varargs]
         if func_args[-1] is None: func_args.pop()
         prefix = cls.tag_prefix_list
-        return '**`!' + prefix[0] + '`** ' + \
-               ' '.join('`' + item + '`' for item in prefix[1:]) + ' ' + \
-               ' '.join('__`' + cls.pprint.get(item, item) + '`__' for item in func_args)
+        prefix[0] = COMMAND_PREFIX + prefix[0]
+        return ' '.join(bold(code(item)) for item in prefix) + ' ' + \
+               ' '.join(underline(code(cls.pprint.get(item, item))) for item in func_args)
 
     @classproperty
     def help(cls):
         if cls.subcommands:
-            lines = [cls.desc, '', '**Commands**' if cls.__base__ == object else '**Subcommands**']
+            lines = [cls.desc, '', bold('Commands' if cls.__base__ == object else 'Subcommands')]
             if cls.__base__ != object:
                 lines = [cls.tag_markup] + lines
             for command in cls.subcommands.values():
