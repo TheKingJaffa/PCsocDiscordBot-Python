@@ -22,7 +22,7 @@ def run_command(command, **kwargs):
     message = Message(command, **kwargs)
     command = command.split()
     cls, args = commands.Help.find_command(command)
-    return cls(message, *args).output
+    return cls(None, message, *args).output
 
 kwargs = {}
 while True:

@@ -1,5 +1,3 @@
-from threading import Thread
-
 import discord
 
 import commands
@@ -23,7 +21,7 @@ async def on_message(message):
     if message.content.startswith(commands.PREFIX):
         args = message.content[1:].split()
         cls, args = commands.Help.find_command(args)
-        output = cls(message, *args).output
+        output = await cls(client, message).init(*args)
         if output is not None:
             await client.send_message(message.channel, output)
 

@@ -7,7 +7,8 @@ HIGH_NOON_CHANNEL = 'gaming'
 
 
 class HighNoon(Command):
-    pass
+    async def eval(self):
+        await self.play_audio('high_noon.mp3')
 
 
 async def high_noon(client, channel):
