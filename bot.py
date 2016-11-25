@@ -1,3 +1,5 @@
+import json
+
 import discord
 
 import commands
@@ -25,6 +27,7 @@ async def on_message(message):
         if output is not None:
             await client.send_message(message.channel, output)
 
-client.run('MjUwNTU1MTI2ODY1OTg1NTM3.CxWjNw.LEUX8aV33pxAZ6tWKh7jaXtQhKk')
+config = json.loads(open('config.json').read())
+client.run(config['token'])
 
-server = client.accept_invite('yMS5Kya')
+server = client.accept_invite(config['invite'])

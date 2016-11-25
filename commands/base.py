@@ -23,6 +23,7 @@ class Tree(type):
             cls.eval = db_session(cls.eval)
 
 class Command(metaclass=Tree):
+    roles_required = None
     db_required = False
     desc = bold('PCSocBot') + ' - PC Enthusiasts society Discord bot made with discord.py by Matt Stark'
     pprint = {}
@@ -42,6 +43,7 @@ class Command(metaclass=Tree):
         argspec = inspect.getargspec(self.eval)
         if len(argspec.args) == len(args) + 1 or argspec.varargs:
             try:
+                self.check_permissions()
                 self.output = await self.eval(*args) if inspect.iscoroutinefunction(self.eval) else self.eval(*args)
             except CommandFailure as e:
                 self.output = e.args[0]
@@ -84,6 +86,15 @@ class Command(metaclass=Tree):
 
     def get_member(self, id):
         return discord.utils.get(self.members, id=str(id))
+
+    def check_permissions(self):
+        if self.roles_required is not None:
+            for role in self.message.author.roles:
+                if role.name.lower() in self.roles_required:
+                    return
+            raise CommandFailure("You need to be a %s to use that command" % \
+                                 " or ".join(self.roles_required))
+
 
     audio_playing = False
     async def play_audio(self, file):

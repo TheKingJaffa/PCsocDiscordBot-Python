@@ -7,6 +7,7 @@ HIGH_NOON_CHANNEL = 'gaming'
 
 
 class HighNoon(Command):
+    roles_required = ['moderator', 'exec']
     async def eval(self):
         await self.play_audio('high_noon.mp3')
 
