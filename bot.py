@@ -1,9 +1,12 @@
+from threading import Thread
+
 import discord
 
 import commands
+from commands.highnoon import high_noon, HIGH_NOON_CHANNEL
 
 client = discord.Client()
-
+high_noon_channel = None
 
 @client.event
 async def on_ready():
@@ -11,7 +14,9 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print('------')
-
+    for channel in client.get_all_channels():
+        if channel.name == HIGH_NOON_CHANNEL:
+            await high_noon(client, channel)
 
 @client.event
 async def on_message(message):
