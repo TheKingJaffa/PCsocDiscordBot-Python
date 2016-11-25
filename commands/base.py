@@ -1,6 +1,7 @@
 from collections import OrderedDict
 import inspect
 
+import discord
 from pony.orm import db_session
 
 from helpers import classproperty, code, bold, underline, CommandFailure
@@ -32,6 +33,7 @@ class Command(metaclass=Tree):
         self.message = message
         self.user = message.author.id
         self.name = message.author.name
+        self.members = message.server.members
         if hasattr(self, 'eval'):
             argspec = inspect.getargspec(self.eval)
             if len(argspec.args) == len(args) + 1 or argspec.varargs:
@@ -74,3 +76,6 @@ class Command(metaclass=Tree):
         else:
             lines = [cls.tag_markup , cls.desc]
         return '\n'.join(lines)
+
+    def get_member(self, id):
+        return discord.utils.get(self.members, id=str(id))

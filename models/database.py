@@ -1,4 +1,4 @@
-from pony.orm import Database
+from pony.orm import Database, sql_debug
 
 from helpers import CommandFailure
 
@@ -7,17 +7,15 @@ DB_FILE = 'test.sqlite3'
 db = Database()
 db.bind('sqlite', DB_FILE, create_db=True)
 
+
 class Table(object):
     @classmethod
-    def get_or_err(self, err, *args, **kwargs):
-        tag = self.get(*args, **kwargs)
-        if tag is None:
-            raise CommandFailure(err)
-        return tag
+    def get_or_err(cls, err=None, **kwargs):
+        obj = cls.get(**kwargs)
+        if obj is None:
+            raise CommandFailure(cls.err if err is None else err)
+        return obj
 
-
-
-class DictionaryMixin(object):
     @classmethod
     def create_or_update(cls, **kwargs):
         old_obj = cls.get(**dict((k, kwargs[k]) for k in cls._pk_columns_))
@@ -27,3 +25,14 @@ class DictionaryMixin(object):
             if k not in cls._pk_columns_:
                 setattr(old_obj, k, v)
         return old_obj
+
+    @classmethod
+    def delete_or_err(cls, err=None, **kwargs):
+        cls.get_or_err(err, **kwargs).delete()
+
+    @classmethod
+    def select_or_err(cls, fn, err=None):
+        objs = cls.select(fn)
+        if not objs:
+            raise CommandFailure(cls.err if err is None else err)
+        return objs
