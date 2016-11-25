@@ -41,8 +41,10 @@ class Command(metaclass=Tree):
                     self.output = self.eval(*args)
                 except CommandFailure as e:
                     self.output = e.args[0]
-            else:
+            elif self.tag_prefix_list:
                 self.output = "Invalid usage of command. Usage:\n" + self.tag_markup
+            else:
+                self.output = "Invalid command\n" + self.help
         else:
             self.output = self.help
 

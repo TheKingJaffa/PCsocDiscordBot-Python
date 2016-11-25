@@ -1,5 +1,3 @@
-from pony.orm import db_session
-
 from commands.base import Command
 from models import Tag
 
@@ -13,21 +11,21 @@ class Tags(Command):
 class Add(Tags):
     desc = "Adds/changes a player tag with associated platform/game to the list"
     def eval(self, platform, tag):
-        Tag.create_or_update(user=self.name, platform=platform, tag=tag)
+        Tag.create_or_update(user=self.user, platform=platform, tag=tag)
         return "%s added as %s tag for %s" % (tag, platform, self.name)
 
 
 class Remove(Tags):
     desc = "Removes a user/player tag to the bot."
     def eval(self, platform):
-        Tag.delete_or_err(user=self.name, platform=platform)
+        Tag.delete_or_err(user=self.user, platform=platform)
         return "%s tag for %s removed" % (platform, self.name)
 
 
 class Get(Tags):
     desc = "Returns your own tag for a platform / game"
     def eval(self, platform):
-        tag = Tag.get_or_err(user=self.name, platform=platform)
+        tag = Tag.get_or_err(user=self.user, platform=platform)
         return "The %s tag of %s is %s" % (platform, self.name, tag.tag)
 
 

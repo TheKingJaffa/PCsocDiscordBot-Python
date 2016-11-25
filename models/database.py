@@ -2,7 +2,7 @@ from pony.orm import Database, sql_debug
 
 from helpers import CommandFailure
 
-DB_FILE = 'test.sqlite3'
+DB_FILE = 'db.sqlite3'
 
 db = Database()
 db.bind('sqlite', DB_FILE, create_db=True)
